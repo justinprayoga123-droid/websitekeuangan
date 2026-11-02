@@ -1,2 +1,2 @@
 # websitekeuangan
-Website pribadi
+Website publik
