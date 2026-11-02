@@ -1,0 +1,754 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS | Global Finance Intelligence</title>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #070b14;
+  --panel: #101827;
+  --blue: #00d5ff;
+  --purple: #8365ff;
+  --green: #00e6a0;
+  --red: #ff5577;
+  --text: #eaf2ff;
+  --muted: #8290a7;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 70% 10%, #102a4c55, transparent 40%),
+    radial-gradient(circle at 10% 80%, #3c176633, transparent 35%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+header {
+  height: 75px;
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ffffff12;
+  background: #070b14dd;
+  backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.logo span {
+  color: var(--blue);
+}
+
+nav {
+  display: flex;
+  gap: 28px;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 12px;
+  transition: .3s;
+}
+
+nav a:hover {
+  color: var(--blue);
+}
+
+.status {
+  font-size: 11px;
+  color: var(--green);
+  padding: 9px 14px;
+  border: 1px solid #00e6a044;
+  border-radius: 30px;
+}
+
+.container {
+  width: 90%;
+  max-width: 1500px;
+  margin: auto;
+}
+
+.hero {
+  min-height: 440px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 20px;
+  padding: 45px 0;
+}
+
+.tag {
+  color: var(--blue);
+  font-size: 11px;
+  letter-spacing: 3px;
+  margin-bottom: 22px;
+}
+
+.hero h1 {
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -3px;
+}
+
+.hero h1 span {
+  background: linear-gradient(90deg, #00d5ff, #9d79ff);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.9;
+  max-width: 480px;
+  margin: 23px 0;
+}
+
+.btn {
+  border: none;
+  border-radius: 30px;
+  padding: 14px 24px;
+  background: linear-gradient(90deg, #00bfe9, #7258ff);
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  transition: .3s;
+}
+
+.btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px #00cfff55;
+}
+
+.globe {
+  height: 390px;
+  position: relative;
+}
+
+#earth {
+  width: 100%;
+  height: 100%;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 35px 0 20px;
+}
+
+.section-title h2 {
+  font-size: 19px;
+}
+
+.section-title span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.card {
+  background: linear-gradient(145deg, #131e30, #0c1421);
+  border: 1px solid #ffffff12;
+  padding: 23px;
+  border-radius: 18px;
+  transition: .3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: #00d5ff66;
+  box-shadow: 0 10px 35px #00d5ff0c;
+}
+
+.card small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.card h3 {
+  margin: 16px 0 8px;
+  font-size: 24px;
+}
+
+.up { color: var(--green); }
+.down { color: var(--red); }
+
+.card .change {
+  font-size: 12px;
+}
+
+.market-layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.chart-box {
+  background: var(--panel);
+  border: 1px solid #ffffff12;
+  border-radius: 18px;
+  padding: 24px;
+  min-height: 360px;
+}
+
+.chart-box canvas {
+  max-height: 270px;
+}
+
+.chart-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.chart-heading h3 {
+  font-size: 15px;
+}
+
+.chart-heading select {
+  background: #1c2a40;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.asset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.asset {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid #ffffff0d;
+}
+
+.asset-name {
+  font-size: 12px;
+}
+
+.asset-name small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.asset-price {
+  text-align: right;
+  font-size: 12px;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 17px;
+  margin-bottom: 50px;
+}
+
+.news {
+  background: var(--panel);
+  border: 1px solid #ffffff12;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: .3s;
+}
+
+.news:hover {
+  transform: translateY(-5px);
+  border-color: var(--purple);
+}
+
+.news-img {
+  height: 155px;
+  background: linear-gradient(135deg, #132d50, #30205e);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 43px;
+}
+
+.news-content {
+  padding: 20px;
+}
+
+.news-content small {
+  color: var(--blue);
+  font-size: 10px;
+}
+
+.news-content h3 {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 12px 0;
+}
+
+.news-content p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.news-content a {
+  color: var(--blue);
+  display: inline-block;
+  margin-top: 15px;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+footer {
+  border-top: 1px solid #ffffff12;
+  padding: 35px 5%;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: .8s ease;
+}
+
+.reveal.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media(max-width:900px) {
+  nav { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .globe { height: 300px; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .market-layout { grid-template-columns: 1fr; }
+  .news-grid { grid-template-columns: 1fr; }
+}
+
+@media(max-width:480px) {
+  .grid { grid-template-columns: 1fr 1fr; gap: 9px; }
+  .card { padding: 15px; }
+  .card h3 { font-size: 18px; }
+  .hero h1 { letter-spacing: -2px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">NEXUS<span>.</span></div>
+
+  <nav>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#markets">Markets</a>
+    <a href="#commodities">Commodities</a>
+    <a href="#news">Intelligence</a>
+  </nav>
+
+  <div class="status">● SYSTEM ONLINE</div>
+</header>
+
+<main class="container">
+
+<section class="hero">
+  <div>
+    <div class="tag">GLOBAL FINANCIAL INTELLIGENCE</div>
+
+    <h1>
+      Understand The<br>
+      <span>Global Markets.</span>
+    </h1>
+
+    <p>
+      Explore cryptocurrency, global equities, commodities
+      and geopolitical intelligence through one unified
+      financial ecosystem.
+    </p>
+
+    <button class="btn" onclick="document.querySelector('#markets').scrollIntoView({behavior:'smooth'})">
+      Explore Markets ↗
+    </button>
+  </div>
+
+  <div class="globe">
+    <canvas id="earth"></canvas>
+  </div>
+</section>
+
+<section id="dashboard" class="reveal">
+  <div class="section-title">
+    <h2>Global Market Overview</h2>
+    <span>DEMO MARKET DATA</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <small>BITCOIN / USD</small>
+      <h3>$67,420</h3>
+      <div class="change up">▲ 2.45%</div>
+    </div>
+
+    <div class="card">
+      <small>NASDAQ 100</small>
+      <h3>24,180</h3>
+      <div class="change up">▲ 1.28%</div>
+    </div>
+
+    <div class="card">
+      <small>GOLD / XAUUSD</small>
+      <h3>$3,980</h3>
+      <div class="change down">▼ 0.38%</div>
+    </div>
+
+    <div class="card">
+      <small>ETHEREUM / USD</small>
+      <h3>$2,480</h3>
+      <div class="change up">▲ 3.12%</div>
+    </div>
+  </div>
+</section>
+
+<section id="markets" class="reveal">
+  <div class="section-title">
+    <h2>Market Intelligence</h2>
+    <span>FINANCIAL ANALYTICS</span>
+  </div>
+
+  <div class="market-layout">
+
+    <div class="chart-box">
+      <div class="chart-heading">
+        <h3>BTC / USD Performance</h3>
+        <select id="period">
+          <option value="7">7 Days</option>
+          <option value="14">14 Days</option>
+          <option value="30">30 Days</option>
+        </select>
+      </div>
+
+      <canvas id="marketChart"></canvas>
+    </div>
+
+    <div class="chart-box" id="commodities">
+      <div class="chart-heading">
+        <h3>Asset Watchlist</h3>
+        <span class="up">● ACTIVE</span>
+      </div>
+
+      <div class="asset-list">
+        <div class="asset">
+          <div class="asset-name">BTC <small>Bitcoin</small></div>
+          <div class="asset-price">$67,420 <div class="up">+2.45%</div></div>
+        </div>
+
+        <div class="asset">
+          <div class="asset-name">NVDA <small>NVIDIA</small></div>
+          <div class="asset-price">$185.20 <div class="up">+1.82%</div></div>
+        </div>
+
+        <div class="asset">
+          <div class="asset-name">GOOGL <small>Alphabet</small></div>
+          <div class="asset-price">$210.40 <div class="up">+0.92%</div></div>
+        </div>
+
+        <div class="asset">
+          <div class="asset-name">XAUUSD <small>Gold</small></div>
+          <div class="asset-price">$3,980 <div class="down">-0.38%</div></div>
+        </div>
+
+        <div class="asset">
+          <div class="asset-name">WTI <small>Crude Oil</small></div>
+          <div class="asset-price">$62.50 <div class="up">+0.75%</div></div>
+        </div>
+
+        <div class="asset">
+          <div class="asset-name">ETH <small>Ethereum</small></div>
+          <div class="asset-price">$2,480 <div class="up">+3.12%</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="news" class="reveal">
+  <div class="section-title">
+    <h2>Global Intelligence</h2>
+    <span>US & WORLD AFFAIRS</span>
+  </div>
+
+  <div class="news-grid">
+
+    <article class="news">
+      <div class="news-img">🏛️</div>
+      <div class="news-content">
+        <small>UNITED STATES · ECONOMY</small>
+        <h3>Federal Reserve & Global Monetary Policy</h3>
+        <p>Monitor interest rate decisions, inflation and their potential impact on global financial markets.</p>
+        <a href="https://www.federalreserve.gov/newsevents.htm" target="_blank">Read Official Updates ↗</a>
+      </div>
+    </article>
+
+    <article class="news">
+      <div class="news-img">🌎</div>
+      <div class="news-content">
+        <small>GEOPOLITICS · GLOBAL</small>
+        <h3>Global Conflicts & Economic Impact</h3>
+        <p>Explore international developments and their potential impact on energy, gold and currencies.</p>
+        <a href="https://www.reuters.com/world/" target="_blank">Explore World News ↗</a>
+      </div>
+    </article>
+
+    <article class="news">
+      <div class="news-img">📊</div>
+      <div class="news-content">
+        <small>TECHNOLOGY · WALL STREET</small>
+        <h3>US Technology & Financial Markets</h3>
+        <p>Follow technology companies, corporate earnings and developments in the American stock market.</p>
+        <a href="https://www.cnbc.com/technology/" target="_blank">Explore CNBC ↗</a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+</main>
+
+<footer>
+  NEXUS FINANCE © 2026 · GLOBAL FINANCIAL INTELLIGENCE
+  <br><br>
+  Educational interface. Displayed market values are illustrative demo data.
+</footer>
+
+<script>
+
+// 3D DIGITAL EARTH
+
+const canvas = document.getElementById('earth');
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  45,
+  canvas.clientWidth / canvas.clientHeight,
+  0.1,
+  100
+);
+
+camera.position.z = 3.5;
+
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  alpha: true,
+  antialias: true
+});
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+function resizeEarth() {
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+
+  renderer.setSize(width, height, false);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+
+resizeEarth();
+
+const geometry = new THREE.SphereGeometry(1, 64, 64);
+
+const material = new THREE.MeshStandardMaterial({
+  color: 0x075a9d,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.55
+});
+
+const earth = new THREE.Mesh(geometry, material);
+scene.add(earth);
+
+const glowGeometry = new THREE.SphereGeometry(0.94, 48, 48);
+
+const glowMaterial = new THREE.MeshBasicMaterial({
+  color: 0x00cfff,
+  transparent: true,
+  opacity: 0.10,
+  wireframe: false
+});
+
+const globeCore = new THREE.Mesh(glowGeometry, glowMaterial);
+scene.add(globeCore);
+
+const particlesGeometry = new THREE.BufferGeometry();
+const positions = [];
+
+for(let i = 0; i < 1200; i++) {
+  positions.push(
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5
+  );
+}
+
+particlesGeometry.setAttribute(
+  'position',
+  new THREE.Float32BufferAttribute(positions, 3)
+);
+
+const particles = new THREE.Points(
+  particlesGeometry,
+  new THREE.PointsMaterial({
+    color: 0x00d5ff,
+    size: 0.009,
+    transparent: true,
+    opacity: 0.8
+  })
+);
+
+scene.add(particles);
+
+scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+
+const light = new THREE.PointLight(0x00d5ff, 4);
+light.position.set(3, 2, 4);
+scene.add(light);
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  earth.rotation.y += 0.002;
+  globeCore.rotation.y += 0.002;
+  particles.rotation.y -= 0.0005;
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', resizeEarth);
+
+
+// MARKET CHART
+
+const ctx = document.getElementById('marketChart');
+
+function makeData(days) {
+  let price = 64000;
+
+  return Array.from({length: days}, (_, i) => {
+    price += (Math.random() - 0.42) * 1800;
+    return Math.round(price);
+  });
+}
+
+let chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: Array.from({length: 7}, (_, i) => `Day ${i+1}`),
+    datasets: [{
+      label: 'BTC Price',
+      data: makeData(7),
+      borderColor: '#00d5ff',
+      backgroundColor: 'rgba(0,213,255,0.10)',
+      fill: true,
+      tension: 0.4,
+      pointRadius: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {display: false}
+    },
+    scales: {
+      x: {
+        grid: {color: '#ffffff0a'},
+        ticks: {color: '#8290a7'}
+      },
+      y: {
+        grid: {color: '#ffffff0a'},
+        ticks: {color: '#8290a7'}
+      }
+    }
+  }
+});
+
+document.getElementById('period').addEventListener('change', e => {
+  const days = Number(e.target.value);
+
+  chart.data.labels = Array.from(
+    {length: days},
+    (_, i) => `Day ${i+1}`
+  );
+
+  chart.data.datasets[0].data = makeData(days);
+  chart.update();
+});
+
+
+// SCROLL ANIMATION
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      entry.target.classList.add('show');
+    }
+  });
+}, {threshold: 0.12});
+
+document.querySelectorAll('.reveal').forEach(el => {
+  observer.observe(el);
+});
+
+</script>
+
+</body>
+</html>
